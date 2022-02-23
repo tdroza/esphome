@@ -1,7 +1,7 @@
 #include "LilygoT547Display.h"
 
 #include "esphome/core/log.h"
-
+#include <string.h>
 extern "C" {
 #include "eink.h"
 }
@@ -15,6 +15,8 @@ static const char *const TAG = "lilygo_t5_47.display";
 // Static initialization to save time on memory allocation in runtime,
 // ans also workaround framgamted memory in ESPHome
 static uint8_t fb[EINK_BUFFER_SIZE] = {0};
+
+RTC_NOINIT_ATTR static uint32_t full_update_countdown_;
 
 static int correct_adc_reference() {
   esp_adc_cal_characteristics_t adc_chars;
@@ -37,7 +39,13 @@ void LilygoT547Display::fill(Color color) { eink_buffer_set(fb, convert_color(co
 
 void LilygoT547Display::setup() {
   eink_init();
-  this->full_update_countdown_ = 0;
+
+  if (esp_sleep_get_wakeup_cause() == ESP_SLEEP_WAKEUP_UNDEFINED || full_update_countdown_ < 0 || full_update_countdown_ >= this->full_update_every_) {
+    ESP_LOGD(TAG, "Resetting periodic full update countdown to 0.");
+    full_update_countdown_ = 0;
+  } else {
+    ESP_LOGD(TAG, "Restored periodic full update countdown to %u.", full_update_countdown_);
+  }
 }
 
 void LilygoT547Display::update() {
@@ -49,14 +57,17 @@ void LilygoT547Display::flush_screen_changes() {
   eink_power_on();
 
   if (this->full_update_every_ > 0) {
+    ESP_LOGD(TAG, "Periodic full update countdown %u.", full_update_countdown_);
 
-    if (this->full_update_countdown_ == 0) {
-      this->full_update_countdown_ = this->full_update_every_-1;
-      ESP_LOGD(TAG, "Doing a full update! %u iterations before the next one", this->full_update_countdown_);
+    if (full_update_countdown_ == 0) {
+      full_update_countdown_ = this->full_update_every_;
+      ESP_LOGD(TAG, "Full update!");
       
       eink_flush(false);
       eink_flush(true);
     }
+
+    full_update_countdown_--;
   }
 
   eink_render(fb);

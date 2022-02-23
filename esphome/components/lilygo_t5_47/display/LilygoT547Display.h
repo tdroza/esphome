@@ -40,7 +40,6 @@ class LilygoT547Display : public PollingComponent, public display::DisplayBuffer
 
  private:
   uint32_t full_update_every_;
-  uint32_t full_update_countdown_{0};
 };
 
 }  // namespace lilygo_t5_47
