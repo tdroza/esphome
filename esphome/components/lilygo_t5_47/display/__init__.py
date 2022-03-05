@@ -10,6 +10,9 @@ from esphome.const import (
 
 from .. import lilygo_t5_47_ns
 
+CONF_CYCLES_RENDER = "cycles_render"
+CONF_CYCLES_INVERT = "cycles_invert"
+
 Display = lilygo_t5_47_ns.class_(
     "LilygoT547Display", cg.PollingComponent, display.DisplayBuffer
 )
@@ -19,6 +22,8 @@ CONFIG_SCHEMA = cv.All(
         {
             cv.GenerateID(): cv.declare_id(Display),
             cv.Optional(CONF_FULL_UPDATE_EVERY, default=1): cv.uint32_t,
+            cv.Optional(CONF_CYCLES_RENDER, default=20): cv.uint32_t,
+            cv.Optional(CONF_CYCLES_INVERT, default=20): cv.uint32_t,
         }
     ).extend(cv.polling_component_schema("60s")),
     cv.has_at_most_one_key(CONF_PAGES, CONF_LAMBDA),
@@ -32,6 +37,8 @@ async def to_code(config):
     await display.register_display(var, config)
 
     cg.add(var.set_full_update_every(config[CONF_FULL_UPDATE_EVERY]))
+    cg.add(var.set_cycles_render(config[CONF_CYCLES_RENDER]))
+    cg.add(var.set_cycles_invert(config[CONF_CYCLES_INVERT]))
 
     if CONF_LAMBDA in config:
         lambda_ = await cg.process_lambda(

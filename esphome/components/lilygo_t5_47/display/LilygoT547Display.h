@@ -29,6 +29,15 @@ class LilygoT547Display : public PollingComponent, public display::DisplayBuffer
   void set_full_update_every(uint32_t value) { this->full_update_every_ = value; }
   uint32_t get_full_update_every() { return this->full_update_every_; }
 
+  void set_full_update_countdown(uint32_t value);
+  uint32_t get_full_update_countdown();
+
+  void set_cycles_render(uint32_t value) { this->cycles_render_ = value; }
+  uint32_t get_cycles_render() { return this->cycles_render_; }
+
+  void set_cycles_invert(uint32_t value) { this->cycles_invert_ = value; }
+  uint32_t get_cycles_invert() { return this->cycles_invert_; }
+
   void flush_screen_changes();
   void power_on();
   void power_off();
@@ -40,6 +49,8 @@ class LilygoT547Display : public PollingComponent, public display::DisplayBuffer
 
  private:
   uint32_t full_update_every_;
+  uint32_t cycles_render_;
+  uint32_t cycles_invert_;
 };
 
 }  // namespace lilygo_t5_47

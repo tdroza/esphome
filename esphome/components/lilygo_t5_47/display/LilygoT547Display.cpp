@@ -63,14 +63,13 @@ void LilygoT547Display::flush_screen_changes() {
       full_update_countdown_ = this->full_update_every_;
       ESP_LOGD(TAG, "Full update!");
       
-      eink_flush(false);
-      eink_flush(true);
+      eink_render_advanced(fb, this->cycles_invert_, true);
     }
 
     full_update_countdown_--;
   }
 
-  eink_render(fb);
+  eink_render_advanced(fb, this->cycles_render_, false);
 
   eink_power_off();
 }
@@ -97,6 +96,9 @@ double_t LilygoT547Display::get_battery_voltage() {
   int v = analogRead(36);
   return ((double_t) v / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
 }
+
+void LilygoT547Display::set_full_update_countdown(uint32_t value) { full_update_countdown_ = value; }
+uint32_t LilygoT547Display::get_full_update_countdown() { return full_update_countdown_; }
 
 }  // namespace lilygo_t5_47
 }  // namespace esphome
