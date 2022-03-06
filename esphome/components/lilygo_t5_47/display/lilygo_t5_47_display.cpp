@@ -1,4 +1,4 @@
-#include "LilygoT547Display.h"
+#include "lilygo_t5_47_display.h"
 
 #include "esphome/core/log.h"
 #include <string.h>
@@ -17,15 +17,6 @@ static const char *const TAG = "lilygo_t5_47.display";
 static uint8_t fb[EINK_BUFFER_SIZE] = {0};
 
 RTC_NOINIT_ATTR static uint32_t full_update_countdown_;
-
-static int correct_adc_reference() {
-  esp_adc_cal_characteristics_t adc_chars;
-  esp_adc_cal_value_t val_type = esp_adc_cal_characterize(ADC_UNIT_1, ADC_ATTEN_DB_11, ADC_WIDTH_BIT_12, 1100, &adc_chars);
-  if (val_type == ESP_ADC_CAL_VAL_EFUSE_VREF) {
-    return adc_chars.vref;
-  }
-  return 1100;
-}
 
 static inline bool convert_color(Color color) { return color.red != 0 || color.green != 0 || color.blue != 0; }
 
@@ -89,12 +80,6 @@ void LilygoT547Display::dump_config() {
   LOG_DISPLAY("", "Lilygo T5 47 Display", this);
   ESP_LOGCONFIG(TAG, "  Full Update Every: %u", this->full_update_every_);
   LOG_UPDATE_INTERVAL(this);
-}
-
-double_t LilygoT547Display::get_battery_voltage() {
-  int vref = correct_adc_reference();
-  int v = analogRead(36);
-  return ((double_t) v / 4095.0) * 2.0 * 3.3 * (vref / 1000.0);
 }
 
 void LilygoT547Display::set_full_update_countdown(uint32_t value) { full_update_countdown_ = value; }

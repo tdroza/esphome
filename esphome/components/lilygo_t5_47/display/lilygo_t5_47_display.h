@@ -1,6 +1,5 @@
 #pragma once
 #include <Arduino.h>
-#include <driver/adc.h>
 
 #include "esp_adc_cal.h"
 #include "esphome/components/display/display_buffer.h"
@@ -41,8 +40,6 @@ class LilygoT547Display : public PollingComponent, public display::DisplayBuffer
   void flush_screen_changes();
   void power_on();
   void power_off();
-
-  double_t get_battery_voltage();
 
  protected:
   void HOT draw_absolute_pixel_internal(int x, int y, Color color) override;
