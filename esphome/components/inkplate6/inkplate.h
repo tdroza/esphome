@@ -84,7 +84,8 @@ class Inkplate6 : public PollingComponent, public display::DisplayBuffer, public
   bool get_partial_updating() { return this->partial_updating_; }
   uint8_t get_temperature() { return this->temperature_; }
 
-  void block_partial() { this->block_partial_ = true; }
+  void set_block_partial(bool value) { this->block_partial_ = value; }
+  void preload_screen() { memcpy(this->buffer_, this->partial_buffer_, this->get_buffer_length_()); }
 
  protected:
   void draw_absolute_pixel_internal(int x, int y, Color color) override;
