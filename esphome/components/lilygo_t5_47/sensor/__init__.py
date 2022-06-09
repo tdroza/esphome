@@ -12,6 +12,8 @@ LilygoT547Sensor = lilygo_t5_47_ns.class_(
     "LilygoT547Sensor", sensor.Sensor, cg.PollingComponent
 )
 
+CONF_ALWAYS_ON = "always_on"
+
 CONFIG_SCHEMA = (
     sensor.sensor_schema(
         accuracy_decimals=2,
@@ -21,6 +23,7 @@ CONFIG_SCHEMA = (
     .extend(
         {
             cv.GenerateID(): cv.declare_id(LilygoT547Sensor),
+            cv.Optional(CONF_ALWAYS_ON, default=False): cv.boolean,
         }
     )
     .extend(cv.polling_component_schema("60s"))
@@ -31,6 +34,8 @@ async def to_code(config):
     var = cg.new_Pvariable(config[CONF_ID])
     await cg.register_component(var, config)
     await sensor.register_sensor(var, config)
+
+    cg.add(var.set_always_on(config[CONF_ALWAYS_ON]))
 
     cg.add_library("https://github.com/ashald/platformio-epdiy-monochrome.git", None)
 

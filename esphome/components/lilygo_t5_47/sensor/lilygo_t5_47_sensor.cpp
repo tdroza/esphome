@@ -29,6 +29,12 @@ void LilygoT547Sensor::update() {
   eink_power_on();
   delay(20);
   this->publish_state(this->get_battery_voltage());
+
+  if (this->always_on_) {
+    ESP_LOGD(TAG, "skipping power_off because always_on config is set");
+    return;
+  }
+
   eink_power_off();
 }
 

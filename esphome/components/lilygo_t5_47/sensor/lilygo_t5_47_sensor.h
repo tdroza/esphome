@@ -20,6 +20,12 @@ class LilygoT547Sensor : public sensor::Sensor, public PollingComponent {
   float get_setup_priority() const override;
 
   float get_battery_voltage();
+
+  void set_always_on(bool value) { this->always_on_ = value; }
+  bool get_always_on() const { return this->always_on_; }
+
+ private:
+  bool always_on_ = false;
 };
 
 }  // namespace lilygo_t5_47

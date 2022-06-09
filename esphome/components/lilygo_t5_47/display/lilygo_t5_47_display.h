@@ -37,6 +37,9 @@ class LilygoT547Display : public PollingComponent, public display::DisplayBuffer
   void set_cycles_invert(uint32_t value) { this->cycles_invert_ = value; }
   uint32_t get_cycles_invert() { return this->cycles_invert_; }
 
+  void set_always_on(bool value) { this->always_on_ = value; }
+  bool get_always_on() const { return this->always_on_; }
+
   void flush_screen_changes();
   void power_on();
   void power_off();
@@ -48,6 +51,7 @@ class LilygoT547Display : public PollingComponent, public display::DisplayBuffer
   uint32_t full_update_every_;
   uint32_t cycles_render_;
   uint32_t cycles_invert_;
+  bool always_on_ = false;
 };
 
 }  // namespace lilygo_t5_47

@@ -37,6 +37,11 @@ void LilygoT547Display::setup() {
   } else {
     ESP_LOGD(TAG, "Restored periodic full update countdown to %u.", full_update_countdown_);
   }
+
+  if (this->always_on_) {
+    ESP_LOGD(TAG, "enabling power supply because always_on config is set");
+    eink_power_on();
+  }
 }
 
 void LilygoT547Display::update() {
@@ -45,7 +50,7 @@ void LilygoT547Display::update() {
 }
 
 void LilygoT547Display::flush_screen_changes() {
-  eink_power_on();
+  this->power_on();
 
   if (this->full_update_every_ > 0) {
     ESP_LOGD(TAG, "Periodic full update countdown %u.", full_update_countdown_);
@@ -62,19 +67,32 @@ void LilygoT547Display::flush_screen_changes() {
 
   eink_render_advanced(fb, this->cycles_render_, false);
 
-  eink_power_off();
+  this->power_off();
 }
 
-void LilygoT547Display::on_shutdown() { eink_deinit(); }
+void LilygoT547Display::on_shutdown() {
+  ESP_LOGD(TAG, "eink_deinit");
+  eink_deinit();
+}
 
 void HOT LilygoT547Display::draw_absolute_pixel_internal(int x, int y, Color color) {
   bool c = convert_color(color);
   eink_set_pixel(x, y, c, fb);
 }
 
-void LilygoT547Display::power_on() { eink_power_on(); }
+void LilygoT547Display::power_on() {
+  ESP_LOGD(TAG, "eink_power_on");
+  eink_power_on();
+}
 
-void LilygoT547Display::power_off() { eink_power_off(); }
+void LilygoT547Display::power_off() {
+  ESP_LOGD(TAG, "eink_power_off");
+  if (this->always_on_) {
+    ESP_LOGD(TAG, "ignoring power_off call because always_on config is set");
+    return;
+  }
+  eink_power_off();
+}
 
 void LilygoT547Display::dump_config() {
   LOG_DISPLAY("", "Lilygo T5 47 Display", this);
